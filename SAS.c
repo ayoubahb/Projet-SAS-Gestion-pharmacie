@@ -207,8 +207,11 @@ void achat(PRODUIT arr[]){
           }
         }else{
             stat_pos++;
-            stat_list[stat_pos].total = 0;
-            stat_list[stat_pos].total += arr[cible].quantite_vendu * arr[cible].prix;
+            for (int i = 0; i < length; i++)
+            {
+              arr[i].quantite_vendu = 0;
+            }
+            
             
         }
         //achat d'un seul produit
