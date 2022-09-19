@@ -15,8 +15,10 @@ void alimentation();
 void supprime();
 //Global variable
 
-int nbr_prd = 5 ;
+int length = 5 ;
+int stat_pos = 0;
 float prix_total = 0;
+
 //Structure
 
 typedef struct produit
@@ -29,10 +31,19 @@ typedef struct produit
   int quantite_vendu;
 }PRODUIT;
 
+typedef struct statistique
+{
+  char date[50];
+  float total,moyenne;
+  int min_pos,max_pos;
+}STAT;
+
+STAT stat_list[1000];
+
 /*====================================Fonctions====================================*/
 int position_code(PRODUIT arr[],char prd_ach[50]){
   int cible = -1;
-  for (int i = 0; i < nbr_prd; i++)
+  for (int i = 0; i < length; i++)
   {
     if(strcmp(arr[i].code,prd_ach)==0){
       cible = i;
@@ -48,7 +59,7 @@ void ajout(PRODUIT arr[]){
   printf("\nCombient de produit vous pouvez ajouter : ");
   scanf("%d",&n);
   fflush(stdin); 
-  for (int i = nbr_prd; i < n+nbr_prd; i++)
+  for (int i = length; i < n+length; i++)
   {
     printf("======== Produit %d ========",j);
     printf("\ncode :");
@@ -64,7 +75,7 @@ void ajout(PRODUIT arr[]){
     arr[i].quantite_vendu=0;
     j++;
   }
-  nbr_prd+=n;
+  length+=n;
   printf("Produit(s) ajoute avec succsse");
 }
 //trier la list principal avec les prix des produit **order decroissant** ou nom **order alphabetique
@@ -79,10 +90,10 @@ void tri (PRODUIT arr[]){
   scanf("%d",&ord);
   if (ord==1)
   {
-    for (int i = 0; i < nbr_prd-1; i++)
+    for (int i = 0; i < length-1; i++)
     {
       index=i;
-      for (int j = i; j < nbr_prd; j++)
+      for (int j = i; j < length; j++)
       {
         if(arr[index].prix < arr[j].prix){ 
           index = j;
@@ -98,10 +109,10 @@ void tri (PRODUIT arr[]){
     affichage (arr);
   }else if (ord==2)
   {
-    for (int i = 0; i < nbr_prd-1; i++)
+    for (int i = 0; i < length-1; i++)
     {
       index=i;
-      for (int j = i; j < nbr_prd; j++)
+      for (int j = i; j < length; j++)
       {
         if(strcmp(arr[index].nom, arr[j].nom)>0){ 
           index = j;
@@ -123,7 +134,7 @@ void tri (PRODUIT arr[]){
 }
 //Affichage les produits
 void affichage (PRODUIT arr[]){
-  for (int i = 0; i < nbr_prd; i++)
+  for (int i = 0; i < length; i++)
   {
     printf("\n\ncode : %s",arr[i].code);
     printf("\nnom : %s",arr[i].nom);
@@ -149,10 +160,60 @@ void achat(PRODUIT arr[]){
     }else{
       printf("\nLa quantite a aheter : ");
       scanf("%d",&qty_ach);
-      arr[cible].quantite -= qty_ach;
-      arr[cible].quantite_vendu += qty_ach;
-      prix_total += arr[cible].quantite_vendu * arr[cible].prix;
-      printf("\nVotre achat a ete effectue\n");
+      if (arr[cible].quantite < qty_ach)
+      {
+        printf("La quantité disponible n'est pas en mesure de couvrir votre besoin");
+      }else
+      {
+        arr[cible].quantite -= qty_ach;
+        arr[cible].quantite_vendu += qty_ach;
+        prix_total += arr[cible].quantite_vendu * arr[cible].prix;
+        printf("\nVotre achat a ete effectue\n");
+        
+        //struct statistique
+        if(strcmp(stat_list[stat_pos].date,__DATE__)==0){
+          //total en une journe
+          stat_list[stat_pos].total += arr[cible].quantite_vendu * arr[cible].prix;
+          //moyenne 
+          float som_qv,som_qfp;
+          som_qfp = 0;
+          for (int i = 0; i < length; i++)
+          {
+            som_qfp+=arr[i].prix * arr[i].quantite_vendu;
+          }
+          som_qv = 0;
+          for (int j = 0; j < length; j++)
+          {
+            som_qv+=arr[j].quantite_vendu;
+          }
+          stat_list[stat_pos].moyenne = som_qfp/som_qv;
+          //min et max
+          float min, max;
+          min = arr[0].prix * arr[0].quantite_vendu;
+          for (int i = 1; i < length; i++)
+          {
+            if(arr[i].prix * arr[i].quantite_vendu < min){
+              min = arr[i].prix * arr[i].quantite_vendu;
+              stat_list[stat_pos].min_pos =i; 
+            }
+          }
+          max = arr[0].prix * arr[0].quantite_vendu;
+          for (int i = 1; i < length; i++)
+          {
+            if(arr[i].prix * arr[i].quantite_vendu > max){
+              max = arr[i].prix * arr[i].quantite_vendu;
+              stat_list[stat_pos].max_pos =i; 
+            }
+          }
+        }else{
+            stat_pos++;
+            stat_list[stat_pos].total = 0;
+            stat_list[stat_pos].total += arr[cible].quantite_vendu * arr[cible].prix;
+            
+        }
+        //achat d'un seul produit
+
+      }
     }
   }else{
     printf("\nAucun produit avec le code entree dans le stock\n");
@@ -189,7 +250,7 @@ void recherche(PRODUIT arr[]){
     int quant;
     printf("Entrer la quantite : ");
     scanf("%d",&quant);
-    for (int i = 0; i < nbr_prd; i++)
+    for (int i = 0; i < length; i++)
     {
       if(arr[i].quantite == quant){
         cible = i;
@@ -217,51 +278,93 @@ void recherche(PRODUIT arr[]){
 //afficher les produits dont leur etate de stock inferieur de 3
 void etat(PRODUIT arr[]){
   int check = 0;
-  for (int i = 0; i < nbr_prd; i++)
+  for (int i = 0; i < length; i++)
   {
     if(arr[i].quantite <= 3){
-      printf("\n\ncode : %s",arr[i].code);
-      printf("nom : %s",arr[i].nom);
-      printf("quatite : %d\n",arr[i].quantite);
-      printf("prix : %.2f DH\n",arr[i].prix);
-      printf("prix TTC : %.2f DH\n\n",arr[i].prix_ttc);
-      printf("=====================");
       check++;
     }
   }
   if (check==0)
   {
-    printf("Pas de produit dont la quantite inferieur a 3");
+    printf("Pas de produit dont sa quantite inferieur a 3");
+  }else{
+    printf("\nLes produits ayant une quantite inferieur a 3 : \n");
+    for (int i = 0; i < length; i++)
+    {
+      if(arr[i].quantite <= 3){
+        printf("\n\ncode : %s",arr[i].code);
+        printf("nom : %s",arr[i].nom);
+        printf("quatite : %d\n",arr[i].quantite);
+        printf("prix : %.2f DH\n",arr[i].prix);
+        printf("prix TTC : %.2f DH\n\n",arr[i].prix_ttc);
+        printf("=====================");
+      }
+    }
   }
 }
 //incrementer la quantite d'un produit
-void alimentation(PRODUIT arr[],char prd_ach[50],int qty){
+void alimentation(PRODUIT arr[]){
+  int qty_al; 
+  char nom_prd[50];
+  printf("Veuillez entrer le code de produit a alimenter : ");
+  fgets(nom_prd,50,stdin);
+  printf("\nLa quantite a aheter : ");
+  scanf("%d",&qty_al);
   int cible;
-  cible = position_code(arr,prd_ach);
+  cible = position_code(arr,nom_prd);
   if(cible!=-1){
-    arr[cible].quantite += qty;
+    arr[cible].quantite += qty_al;
     printf("\nVotre alimentation a ete effectue\n");
   }else{
     printf("\nAucun produit avec le code entree dans le stock\n");
   }
 }
 //supprimer un produit
-void supprime (PRODUIT arr[],char prd_ach[50]){
+void supprime (PRODUIT arr[]){
   int cible;
-  cible = position_code(arr,prd_ach);
-  for (int i = cible; i < nbr_prd; i++)
+  char nom_prd[50];
+  printf("Veuillez entrer le code de produit a alimenter : ");
+  fgets(nom_prd,50,stdin);
+  cible = position_code(arr,nom_prd);
+  for (int i = cible; i < length; i++)
   {
     arr[i]=arr[i+1];
   }
-  nbr_prd--;
+  length--;
+}
+
+void stat_affichage(STAT arr[]){
+  int ch;
+  printf("\n\n1-Afficher le total des prix des produits vendus en journée courante");
+  printf("\n2-Afficher la moyenne des prix des produits vendus en journée courante");
+  printf("\n3-Afficher le Max des prix des produits vendus en journée courante");
+  printf("\n4-Afficher le Min des prix des produits vendus en journée courante");
+
+  printf("Votre choix: ");
+  scanf("%d",&ch);
+
+  switch (ch)
+  {
+  case 1:
+    
+    break;
+  
+  default:
+    break;
+  }
+}
+
+void stat_stock(){
+  // if(strcmp(stat_list[stat_pos].date,__DATE__)==0){
+    
+  // }else{
+
+  // }
 }
 
 int main(){
   //Variables
   int ch;
-  int qty_al;
-
-  char nom_prd[50];
   PRODUIT prd[1000];
 
   strcpy(prd[0].code,"6118000170167\n");
@@ -311,6 +414,8 @@ int main(){
     printf("\n4.Chercher un produit avec code");
     printf("\n5.Etat de stock");
     printf("\n6.Alimenter le stock");
+    printf("\n7.Suporime un produit");
+    printf("\n8.Statistique de vente");
     printf("\n0.Quitter");
     printf("\n\nVotre choix : ");
     scanf("%d",&ch);
@@ -319,7 +424,6 @@ int main(){
       case 1:    
         ajout(prd);
         break;
-      
       case 2:
         tri(prd);
         break;
@@ -332,23 +436,28 @@ int main(){
         recherche(prd);
         break;
       case 5:
-        printf("\nLes produits ayant une quantite inferieur a 3 : \n");
         etat(prd);
         break;
       case 6:
-        fflush(stdin);    
-        printf("Veuillez entrer le code de produit a alimenter : ");
-        fgets(nom_prd,50,stdin);
-        printf("\nLa quantite a aheter : ");
-        scanf("%d",&qty_al);
-        alimentation(prd,nom_prd,qty_al);
+        alimentation(prd);
+        break;
+      
+      case 7:
+        supprime(prd);
+        break;
+
+      case 8:
+        
+        break;
+      
+      case 0:
+        exit(0);
         break;
       
       default:
-        exit(0);
+        
         break;
       }
   } while (ch!=0);
-  
   return 0;
 }
