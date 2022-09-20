@@ -15,9 +15,8 @@ void alimentation();
 void supprime();
 //Global variable
 
-int length = 5 ;
-int day = 0;
-float prix_total = 0;
+int length = 6 ;
+
 
 //Structure
 
@@ -28,17 +27,17 @@ typedef struct produit
   int quantite;
   float prix;
   float prix_ttc;
-  int quantite_vendu;
 }PRODUIT;
 
-typedef struct statistique
+typedef struct achat
 {
   char date[50];
-  float total,moyenne;
-  int min_pos,max_pos;
-}STAT;
+  PRODUIT prd_ach;
+  int qtty;
+}ACHAT;
 
-STAT stat_list[1000];
+int achat_len = 0;
+
 
 /*====================================Fonctions====================================*/
 int position_code(PRODUIT arr[],char prd_ach[50]){
@@ -72,7 +71,6 @@ void ajout(PRODUIT arr[]){
     scanf("%f",&arr[i].prix);
     fflush(stdin);
     arr[i].prix_ttc = arr[i].prix+(arr[i].prix * 0.15);
-    arr[i].quantite_vendu=0;
     j++;
   }
   length+=n;
@@ -139,7 +137,7 @@ void affichage (PRODUIT arr[]){
   }
 }
 //Achat de produit
-int achat(PRODUIT arr[]){
+int achat(PRODUIT arr[],ACHAT ach[]){
   char nom_prd[50];
   int qty_ach;
   fflush(stdin);    
@@ -149,110 +147,16 @@ int achat(PRODUIT arr[]){
   scanf("%d",&qty_ach);
   int cible;
   cible = position_code(arr,nom_prd);
-  
-  if(strcmp(stat_list[day].date,__DATE__)==0){
-    // if(cible==-1 || arr[cible].quantite == 0 || arr[cible].quantite < qty_ach){
-    //   printf("\nImpossible d effectuer l achat\nVeuileez verifier l etat de stock de produit ou si le produit ecxiste\n");
-    // }
-    // else{
-      arr[cible].quantite -= qty_ach;
-      arr[cible].quantite_vendu += qty_ach;
-      //total
-      stat_list[day].total = arr[cible].quantite_vendu * arr[cible].prix;
-      //moyenne 
-      float som_qv,som_qfp;
-      som_qfp = 0;
-      for (int i = 0; i < length; i++)
-      {
-        som_qfp+=arr[i].prix * arr[i].quantite_vendu;
-      }
-      som_qv = 0;
-      for (int j = 0; j < length; j++)
-      {
-        som_qv+=arr[j].quantite_vendu;
-      }
-      stat_list[day].moyenne = som_qfp/som_qv;
-      //min et max
-      float min, max;
-      tri(arr,1);
-      min = arr[0].prix * arr[0].quantite_vendu;
-      for (int i = 1; i < length; i++)
-      {
-        if(arr[i].prix * arr[i].quantite_vendu < min){
-          min = arr[i].prix * arr[i].quantite_vendu;
-          stat_list[day].min_pos =i; 
-        }
-      }
-      max = arr[0].prix * arr[0].quantite_vendu;
-      for (int i = 1; i < length; i++)
-      {
-        if(arr[i].prix * arr[i].quantite_vendu > max){
-          max = arr[i].prix * arr[i].quantite_vendu;
-          stat_list[day].max_pos =i; 
-        }
-      }
-      printf("\nVotre achat a ete effectue\n");
-    
-       
+  if(cible==-1 || arr[cible].quantite < qty_ach){
+    printf("\nImpossible d effectuer l achat\nVeuileez verifier l etat de stock de produit ou si le produit ecxiste\n");
   }else{
-    day++;
-    strcpy(stat_list[day].date,__DATE__);
-    for (int i = 0; i < length; i++)
-    {
-      arr[i].quantite_vendu = 0;
-    }
     arr[cible].quantite -= qty_ach;
-    arr[cible].quantite_vendu += qty_ach;
-    //total
-    stat_list[day].total = arr[cible].quantite_vendu * arr[cible].prix;
+    strcpy(ach[achat_len].date,__DATE__);
+    ach[achat_len].prd_ach = arr[cible];
+    ach[achat_len].qtty = qty_ach;
+    achat_len++;
+    printf("ACHAT EFFECTUEE");
   }
-        
-        //struct statistique
-        // if(strcmp(stat_list[day].date,__DATE__)==0){
-        //   //total en une journe
-        //   stat_list[day].total += arr[cible].quantite_vendu * arr[cible].prix;
-        //   //moyenne 
-        //   float som_qv,som_qfp;
-        //   som_qfp = 0;
-        //   for (int i = 0; i < length; i++)
-        //   {
-        //     som_qfp+=arr[i].prix * arr[i].quantite_vendu;
-        //   }
-        //   som_qv = 0;
-        //   for (int j = 0; j < length; j++)
-        //   {
-        //     som_qv+=arr[j].quantite_vendu;
-        //   }
-        //   stat_list[day].moyenne = som_qfp/som_qv;
-        //   //min et max
-        //   float min, max;
-        //   min = arr[0].prix * arr[0].quantite_vendu;
-        //   for (int i = 1; i < length; i++)
-        //   {
-        //     if(arr[i].prix * arr[i].quantite_vendu < min){
-        //       min = arr[i].prix * arr[i].quantite_vendu;
-        //       stat_list[day].min_pos =i; 
-        //     }
-        //   }
-        //   max = arr[0].prix * arr[0].quantite_vendu;
-        //   for (int i = 1; i < length; i++)
-        //   {
-        //     if(arr[i].prix * arr[i].quantite_vendu > max){
-        //       max = arr[i].prix * arr[i].quantite_vendu;
-        //       stat_list[day].max_pos =i; 
-        //     }
-        //   }
-        // }else{
-        //     day++;
-        //     for (int i = 0; i < length; i++)
-        //     {
-        //       arr[i].quantite_vendu = 0;
-        //     }
-            
-            
-        // }
-        //achat d'un seul produit
-
 }
 //chercher et afficher le produit
 void recherche(PRODUIT arr[]){
@@ -372,20 +276,28 @@ void supprime (PRODUIT arr[]){
   }
 }
 
-void stat_affichage(STAT arr[]){
+void stat_affichage(ACHAT arr[]){
   int ch;
-  printf("\n\n1-Afficher le total des prix des produits vendus en journée courante");
-  printf("\n2-Afficher la moyenne des prix des produits vendus en journée courante");
-  printf("\n3-Afficher le Max des prix des produits vendus en journée courante");
-  printf("\n4-Afficher le Min des prix des produits vendus en journée courante");
-
-  printf("Votre choix: ");
+  float total=0;
+  printf("\n\n1-Afficher le total des prix des produits vendus en journee courante");
+  printf("\n2-Afficher la moyenne des prix des produits vendus en journee courante");
+  printf("\n3-Afficher le Max des prix des produits vendus en journee courante");
+  printf("\n4-Afficher le Min des prix des produits vendus en journee courante");
+  printf("\n\nVotre choix : ");
   scanf("%d",&ch);
 
   switch (ch)
   {
   case 1:
-    
+    for (int i = 0; i < achat_len; i++)
+    {
+      if (strcmp(arr[i].date,__DATE__)==0)
+      {
+        total+=arr[i].prd_ach.prix_ttc * arr[i].qtty; 
+      }
+      
+    }
+    printf("Le total des prix des produits vendus en journee courante est : %.2f",total);
     break;
   
   default:
@@ -393,13 +305,14 @@ void stat_affichage(STAT arr[]){
   }
 }
 
-void stat_stock(){
+// void stat_stock(){
   
-}
+// }
 
 int main(){
   //Variables
   int ch,ord;
+  ACHAT history [1000];
   PRODUIT prd[1000];
 
   strcpy(prd[0].code,"6118000170167\n");
@@ -470,7 +383,7 @@ int main(){
         break;
       
       case 3:
-        achat(prd);
+        achat(prd,history);
         break;
       
       case 4:
@@ -488,7 +401,7 @@ int main(){
         break;
 
       case 8:
-        
+        stat_affichage(history);
         break;
       
       case 0:
@@ -502,3 +415,14 @@ int main(){
   } while (ch!=0);
   return 0;
 }
+    // for (int i = 0; i < achat_len; i++)
+    // {
+    //   printf("\n%s",arr[i].date);
+    //   printf("\ncode %s",arr[i].prd_ach.code);
+    //   printf("nom %s",arr[i].prd_ach.nom);
+    //   printf("\nprix TTC par unite : %.2f",arr[i].prd_ach.prix_ttc);
+    //   printf("\nquantite : %d",arr[i].qtty);
+    //   printf("\nprix TTC d achat total: %.2f\n",arr[i].prd_ach.prix_ttc * arr[i].qtty);
+    //   printf("===========================");
+
+    // }
