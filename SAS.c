@@ -172,7 +172,7 @@ void achat(PRODUIT arr[],ACHAT ach[]){
   char nom_prd[50];//code produit a acheter
   int qty_ach;//la quantite a achter
   fflush(stdin);    
-  printf("Veuillez entrer le code de produit a aheter : ");
+  printf("\nVeuillez entrer le code de produit a aheter : ");
   fgets(nom_prd,50,stdin);
   nom_prd[strlen(nom_prd)-1]=0;
   printf("\nLa quantite a acheter : ");
@@ -196,6 +196,7 @@ void achat(PRODUIT arr[],ACHAT ach[]){
 void recherche(PRODUIT arr[]){
   int n;  //type de recherche code ou quantite
   int cible;
+  int check=0;
 
   //system("cls");
   printf("\nDe quel recherche vous pouvez chercher \n");
@@ -204,7 +205,7 @@ void recherche(PRODUIT arr[]){
   printf("\n0.Retour a la menu");
   printf("\n\nVotre choix : ");
   scanf("%d",&n);
-  
+  //system("cls");
   if (n==1){
     fflush(stdin);
     char prd_ach[50]; //code de produit a chercher
@@ -226,29 +227,26 @@ void recherche(PRODUIT arr[]){
     }
   }else if (n==2){
     int quant; //quantite a chercher
-    printf("Entrer la quantite : ");
+    printf("\n\nEntrer la quantite : ");
     scanf("%d",&quant);
     //verifier si la quntite entrer est egal la quantite d un produit
     for (int i = 0; i < length; i++)
     {
       if(arr[i].quantite == quant){
-        cible = i;
-        break;
+        printf("\n=======================================================================================================\n");
+        printf("code : %s",arr[i].code);
+        printf("\tnom : %s",arr[i].nom);
+        printf("\tquatite : %d",arr[i].quantite);
+        printf("\tprix : %.2f DH",arr[i].prix);
+        printf("\tprix TTC : %.2f DH",arr[i].prix_ttc);
+        printf("\n=======================================================================================================\n");
+        check++;
       }
     }
-    //verifier si la boucle presidente trouve le produit avec la quantite
-    if(cible!=-1){
-      printf("\n=======================================================================================================\n");
-      printf("code : %s",arr[cible].code);
-      printf("\tnom : %s",arr[cible].nom);
-      printf("\tquatite : %d",arr[cible].quantite);
-      printf("\tprix : %.2f DH",arr[cible].prix);
-      printf("\tprix TTC : %.2f DH",arr[cible].prix_ttc);
-      printf("\n=======================================================================================================\n");
-    }else{
+    if (check==0)
+    {
       printf("\nAucun produit avec la quantite entree dans le stock\n");
     }
-
   }else if(n==0){
     printf("\n");
   }else
