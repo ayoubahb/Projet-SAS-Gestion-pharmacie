@@ -14,9 +14,11 @@ void etat();
 void alimentation();
 void supprime();
 void affiche_achat();
+
 //Global variable
 
 int length = 4 ;
+int achat_len = 0;
 
 
 //Structure
@@ -39,7 +41,6 @@ typedef struct achat
   float total;
 }ACHAT;
 
-int achat_len = 0;
 
 
 /*====================================Fonctions====================================*/
@@ -63,12 +64,13 @@ void ajout(PRODUIT arr[]){
   printf("\nCombient de produit vous pouvez ajouter : ");
   scanf("%d",&n);
   fflush(stdin); 
-  system("cls");
+  //system("cls");
   for (int i = x; i < n+x; i++)
   {
     printf("======== Produit %d ========",j);
     printf("\ncode :");
     fgets(arr[i].code,50,stdin);
+    arr[i].code[strlen(arr[i].code)-1]=0;
     check = position_code(arr,arr[i].code);
     if (check !=-1)
     {
@@ -78,6 +80,7 @@ void ajout(PRODUIT arr[]){
     }
     printf("\nnom :");
     fgets(arr[i].nom,50,stdin);
+    arr[i].nom[strlen(arr[i].nom)-1]=0;
     printf("\nqty :");
     scanf("%d",&arr[i].quantite);
     printf("\nprix :");
@@ -88,13 +91,19 @@ void ajout(PRODUIT arr[]){
     j++;
     length++;
   }
-  system("cls");
+  //system("cls");
   printf("\nProduit(s) ajoute avec succsse\n");
 }
 //trier la list principal avec les prix des produit **order decroissant** ou nom **order alphabetique
-void tri (PRODUIT arr[],int ord){
-  int index;
+void tri (PRODUIT arr[]){
+  int index,ord;
   PRODUIT temp;
+  printf("\nDe quel ordre vous pouvez afficher la list des produit \n");
+  printf("\n1.Par prix ou prix TTC(order decroissant)");
+  printf("\n2.Par order alphabetique");
+  printf("\n0.Retour a la menu");
+  printf("\n\nVotre choix : ");
+  scanf("%d",&ord);
   if (ord==1)
   {
     for (int i = 0; i < length-1; i++)
@@ -113,7 +122,7 @@ void tri (PRODUIT arr[],int ord){
         arr[index] = temp;
       }
     }
-    system("cls");
+    //system("cls");
     affichage (arr);
   }else if (ord==2)
   {
@@ -133,7 +142,7 @@ void tri (PRODUIT arr[],int ord){
         arr[index] = temp;
       }
     }
-    system("cls");
+    //system("cls");
     affichage (arr);
   }else if(ord==0){
     printf("\n");
@@ -156,12 +165,13 @@ void affichage (PRODUIT arr[]){
 }
 //Achat de produit
 void achat(PRODUIT arr[],ACHAT ach[]){
-  system("cls");
+  //system("cls");
   char nom_prd[50];
   int qty_ach;
   fflush(stdin);    
   printf("Veuillez entrer le code de produit a aheter : ");
   fgets(nom_prd,50,stdin);
+  nom_prd[strlen(nom_prd)-1]=0;
   printf("\nLa quantite a aheter : ");
   scanf("%d",&qty_ach);
   int cible;
@@ -183,7 +193,7 @@ void recherche(PRODUIT arr[]){
   int n;
   int cible;
 
-  system("cls");
+  //system("cls");
   printf("\nDe quel recherche vous pouvez chercher \n");
   printf("\n1.Par code");
   printf("\n2.Par quantite");
@@ -196,6 +206,7 @@ void recherche(PRODUIT arr[]){
     char prd_ach[50];
     printf("Entrer le code de produit : ");
     fgets(prd_ach,50,stdin);
+    prd_ach[strlen(prd_ach)-1]=0;
     cible = position_code(arr,prd_ach);
     if(cible!=-1){
       printf("\n=======================================================================================================\n");
@@ -248,7 +259,7 @@ void etat(PRODUIT arr[]){
       check++;
     }
   }
-  system("cls");
+  //system("cls");
   if (check==0)
   {
     printf("Pas de produit dont sa quantite inferieur a 3");
@@ -270,13 +281,14 @@ void etat(PRODUIT arr[]){
 }
 //incrementer la quantite d'un produit
 void alimentation(PRODUIT arr[]){
-  system("cls");
+  //system("cls");
   int qty_al; 
   char nom_prd[50];
   int cible;
   fflush(stdin);
   printf("Veuillez entrer le code de produit a alimenter : ");
   fgets(nom_prd,50,stdin);
+  nom_prd[strlen(nom_prd)-1]=0;
   cible = position_code(arr,nom_prd);
   if(cible!=-1){
     printf("\n=======================================================================================================\n");
@@ -301,6 +313,7 @@ void supprime (PRODUIT arr[]){
   fflush(stdin);
   printf("Veuillez entrer le code de produit a supprimer : ");
   fgets(nom_prd,50,stdin);
+  nom_prd[strlen(nom_prd)-1]=0;
   cible = position_code(arr,nom_prd);
   if(cible!=-1){
     for (int i = cible; i < length; i++)
@@ -396,7 +409,7 @@ void maximum(ACHAT list[],PRODUIT arr[]){
   printf("\nTotal de prix vendu TTC: %.2f DH",arr[pos].total);
 }
 void stat_affichage(ACHAT list[],PRODUIT arr[]){
-  system("cls");
+  //system("cls");
   int ch;
   printf("\n\n1-Afficher le total des prix des produits vendus en journee courante");
   printf("\n2-Afficher la moyenne des prix des produits vendus en journee courante");
@@ -409,39 +422,39 @@ void stat_affichage(ACHAT list[],PRODUIT arr[]){
   switch (ch)
   {
   case 1:
-    system("cls");
+    //system("cls");
     printf("Le total des prix des produits vendus en journee courante est : %.2f",total(list));
     break;
   
   case 2:
-    system("cls");
+    //system("cls");
     printf("La moyenne des prix des produits vendus en journee courante est : %.2f",moyenne(list));
     break;
   
   case 3:
-    system("cls");
+    //system("cls");
     minimum(list,arr);
     break;
   
   case 4:
-    system("cls");
+    //system("cls");
     maximum(list,arr);
     break;
   
   case 5:
-    system("cls");
+    //system("cls");
     affiche_achat(list);
     break;
   
   default:
-    system("cls");
+    //system("cls");
     printf("Ce choix n existe pas");
     break;
   }
 }
 
 void affiche_achat(ACHAT list[]){
-  system("cls");
+  //system("cls");
   for (int i = 0; i < achat_len; i++)
   {
     printf("\nDate : %s",list[i].date);
@@ -454,54 +467,53 @@ void affiche_achat(ACHAT list[]){
 
 int main(){
   //Variables
-  int ch,ord;
+  int ch;
   ACHAT history [1000];
   PRODUIT prd[1000];
 
-  strcpy(prd[0].code,"6118000170167\n");
+  strcpy(prd[0].code,"6118000170167");
   strcpy(prd[0].nom,"GLUCOR");
   prd[0].quantite=100;
-  prd[0].prix=892,00;
+  prd[0].prix=182,00;
   prd[0].prix_ttc=prd[0].prix + (prd[0].prix * 0.15);
   prd[0].total=0;
   
 
-  strcpy(prd[1].code,"6118000080060\n");
+  strcpy(prd[1].code,"6118000080060");
   strcpy(prd[1].nom,"AIRTAL");
   prd[1].quantite=100;
-  prd[1].prix=942,00;
+  prd[1].prix=92,00;
   prd[1].prix_ttc=prd[1].prix + (prd[1].prix * 0.15);
   prd[1].total=0;
 
-  strcpy(prd[2].code,"6118000170242\n");
+  strcpy(prd[2].code,"6118000170242");
   strcpy(prd[2].nom,"RANTUDIL");
   prd[2].quantite=100;
-  prd[2].prix=872,00;
+  prd[2].prix=82,00;
   prd[2].prix_ttc=prd[2].prix + (prd[2].prix * 0.15);
   prd[2].total=0;
 
-  strcpy(prd[3].code,"6118000012337\n");
+  strcpy(prd[3].code,"6118000012337");
   strcpy(prd[3].nom,"DIAMOX");
   prd[3].quantite=100;
   prd[3].prix=192,00;
   prd[3].prix_ttc=prd[3].prix + (prd[3].prix * 0.15);
   prd[3].total=0;
   //dashboard
-  system("cls");
+  //system("cls");
   do
   {
-    fflush(stdin);
-    printf("\n\n--------- Bienvenue --------- \n\n");
+    printf("\t\t\n\n--------- Bienvenue --------- \n\n");
     printf("1.Ajouter des produits");
-    printf("\n2.Afficher les produits");
-    printf("\n3.Acheter un produit");
-    printf("\n4.Chercher un produit avec code");
-    printf("\n5.Etat de stock");
-    printf("\n6.Alimenter le stock");
-    printf("\n7.Suporime un produit");
-    printf("\n8.Statistique de vente");
-    printf("\n0.Quitter");
-    printf("\n\nVotre choix : ");
+    printf(" \n\n2.Afficher les produits");
+    printf(" \n\n3.Acheter un produit");
+    printf(" \n\n4.Chercher un produit avec code");
+    printf(" \n\n5.Etat de stock");
+    printf(" \n\n6.Alimenter le stock");
+    printf(" \n\n7.Suporime un produit");
+    printf(" \n\n8.Statistique de vente");
+    printf(" \n\n0.Quitter");
+    printf(" \n\n\nVotre choix : ");
     scanf("%d",&ch);
     switch (ch)
     {
@@ -509,13 +521,7 @@ int main(){
         ajout(prd);
         break;
       case 2:
-        printf("\nDe quel ordre vous pouvez afficher la list des produit \n");
-        printf("\n1.Par prix ou prix TTC(order decroissant)");
-        printf("\n2.Par order alphabetique");
-        printf("\n0.Retour a la menu");
-        printf("\n\nVotre choix : ");
-        scanf("%d",&ord);
-        tri(prd,ord);
+        tri(prd);
         break;
       
       case 3:
