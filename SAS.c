@@ -50,7 +50,7 @@ int position_code(PRODUIT arr[],char prd_ach[50]){
   {
     //verifier si le code de produit entre est dans le tableau 
     if(strcmp(arr[i].code,prd_ach)==0){
-      return i;
+      return i;//return position
     }
   }
   return -1;
@@ -64,7 +64,7 @@ void ajout(PRODUIT arr[]){
   printf("\nCombient de produit vous pouvez ajouter : ");
   scanf("%d",&n);
   fflush(stdin); 
-  //system("cls");
+  system("cls");
   for (int i = x; i < n+x; i++)
   {
     printf("======== Produit %d ========",j);
@@ -92,13 +92,14 @@ void ajout(PRODUIT arr[]){
     j++;
     length++;
   }
-  //system("cls");
+  system("cls");
   printf("\nProduit(s) ajoute avec succsse\n");
 }
 //trier la list principal avec les prix des produit **order decroissant** ou nom **order alphabetique
 void tri (PRODUIT arr[]){
   int index,ord;
   PRODUIT temp;
+  system("cls");
   printf("\nDe quel ordre vous pouvez afficher la list des produit \n");
   printf("\n1.Par prix ou prix TTC(order decroissant)");
   printf("\n2.Par order alphabetique");
@@ -124,7 +125,7 @@ void tri (PRODUIT arr[]){
         arr[index] = temp;
       }
     }
-    //system("cls");
+    system("cls");
     affichage (arr);
   }else if (ord==2)
   {
@@ -145,7 +146,7 @@ void tri (PRODUIT arr[]){
         arr[index] = temp;
       }
     }
-    //system("cls");
+    system("cls");
     affichage (arr);
   }else if(ord==0){
     printf("\n");
@@ -168,7 +169,7 @@ void affichage (PRODUIT arr[]){
 }
 //Achat de produit
 void achat(PRODUIT arr[],ACHAT ach[]){
-  //system("cls");
+  system("cls");
   char nom_prd[50];//code produit a acheter
   int qty_ach;//la quantite a achter
   fflush(stdin);    
@@ -198,14 +199,14 @@ void recherche(PRODUIT arr[]){
   int cible;
   int check=0;
 
-  //system("cls");
+  system("cls");
   printf("\nDe quel recherche vous pouvez chercher \n");
   printf("\n1.Par code");
   printf("\n2.Par quantite");
   printf("\n0.Retour a la menu");
   printf("\n\nVotre choix : ");
   scanf("%d",&n);
-  //system("cls");
+  system("cls");
   if (n==1){
     fflush(stdin);
     char prd_ach[50]; //code de produit a chercher
@@ -265,7 +266,7 @@ void etat(PRODUIT arr[]){
       check++;
     }
   }
-  //system("cls");
+  system("cls");
   //
   if (check==0)
   {
@@ -288,7 +289,7 @@ void etat(PRODUIT arr[]){
 }
 //alimenter la quantite d'un produit
 void alimentation(PRODUIT arr[]){
-  //system("cls");
+  system("cls");
   int qty_al; //la quantite a ajoute a un produit
   char nom_prd[50]; //code de produit
   int cible;
@@ -419,8 +420,9 @@ void maximum(ACHAT list[],PRODUIT arr[]){
   printf("nom : %s",arr[pos].nom);
   printf("\nTotal de prix vendu TTC: %.2f DH",arr[pos].total);
 }
+
 void stat_affichage(ACHAT list[],PRODUIT arr[]){
-  //system("cls");
+  system("cls");
   int ch;
   printf("\n\n1-Afficher le total des prix des produits vendus en journee courante");
   printf("\n2-Afficher la moyenne des prix des produits vendus en journee courante");
@@ -433,39 +435,39 @@ void stat_affichage(ACHAT list[],PRODUIT arr[]){
   switch (ch)
   {
   case 1:
-    //system("cls");
+    system("cls");
     printf("Le total des prix des produits vendus en journee courante est : %.2f",total(list));
     break;
   
   case 2:
-    //system("cls");
+    system("cls");
     printf("La moyenne des prix des produits vendus en journee courante est : %.2f",moyenne(list));
     break;
   
   case 3:
-    //system("cls");
+    system("cls");
     minimum(list,arr);
     break;
   
   case 4:
-    //system("cls");
+    system("cls");
     maximum(list,arr);
     break;
   
   case 5:
-    //system("cls");
+    system("cls");
     affiche_achat(list);
     break;
   
   default:
-    //system("cls");
+    system("cls");
     printf("Ce choix n existe pas");
     break;
   }
 }
 
 void affiche_achat(ACHAT list[]){
-  //system("cls");
+  system("cls");
   for (int i = 0; i < achat_len; i++)
   {
     printf("\nDate : %s",list[i].date);
@@ -511,7 +513,7 @@ int main(){
   prd[3].prix_ttc=prd[3].prix + (prd[3].prix * 0.15);
   prd[3].total=0;
 
-  //system("cls");
+  system("cls");
   do
   {
     printf("\t\t\n\n--------- Bienvenue --------- \n\n");
@@ -521,8 +523,8 @@ int main(){
     printf(" \n\n4.Chercher un produit avec code");
     printf(" \n\n5.Etat de stock");
     printf(" \n\n6.Alimenter le stock");
-    printf(" \n\n7.Suporime un produit");
-    printf(" \n\n8.Statistique de vente");
+    printf(" \n\n7.Supprimer un produit");
+    printf(" \n\n8.Afficher les statistique de vente");
     printf(" \n\n0.Quitter");
     printf(" \n\n\nVotre choix : ");
     scanf("%d",&ch);
@@ -542,9 +544,11 @@ int main(){
       case 4:
         recherche(prd);
         break;
+
       case 5:
         etat(prd);
         break;
+
       case 6:
         alimentation(prd);
         break;
